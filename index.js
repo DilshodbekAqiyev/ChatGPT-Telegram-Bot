@@ -11,7 +11,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Salom! Men Gemini AI botman. Savolingizni yozing 👇"
+    "Salom! Men ChatGPT AI botman. Savolingizni yozing 👇"
   );
 });
 
@@ -25,7 +25,8 @@ bot.onText(/\/help/, (msg) => {
     "• Matn yozish, tarjima, maslahat olish\n" +
     "\nBuyruqlar:\n" +
     "/start - Botni ishga tushirish\n" +
-    "/help - Botdan foydalanish bo‘yicha ma’lumot";
+    "/help - Botdan foydalanish bo‘yicha ma’lumot\n\n\n" +
+    "Yaratuvchi: t.me/dilshodbekaqiyev";
 
   bot.sendMessage(chatId, helpText, { parse_mode: "Markdown" });
 });
