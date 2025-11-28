@@ -2,8 +2,6 @@ require("dotenv").config();
 const TelegramBot = require("node-telegram-bot-api");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fetch = require("node-fetch");
-const fs = require("fs");
-const path = require("path");
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
@@ -42,48 +40,42 @@ bot.on("voice", async (msg) => {
   try {
     bot.sendChatAction(chatId, "typing");
 
+    // 1. Telegramdan ovoz faylini olish
     const fileId = msg.voice.file_id;
     const fileUrl = await bot.getFileLink(fileId);
 
-    // 1. Voice-ni yuklab olish
+    // 2. Ovoz faylini buffer sifatida yuklab olish (LOCAL YO‘Q!)
     const res = await fetch(fileUrl);
-    const buffer = await res.buffer();
+    const audioBuffer = await res.buffer();
 
-    const filePath = path.join(process.cwd(), "voice.ogg");
-    fs.writeFileSync(filePath, buffer);
-
-    // 2. Ovoz → matn (transcript)
-    const audioBytes = fs.readFileSync(filePath);
-
-    const result = await model.generateContent([
+    // 3. Ovoz → matn (transcript)
+    const transcriptResult = await model.generateContent([
       {
         inlineData: {
-          data: audioBytes.toString("base64"),
+          data: audioBuffer.toString("base64"),
           mimeType: "audio/ogg",
         },
       },
       "Bu ovozni matnga aylantir.",
     ]);
 
-    const transcript = result.response.text();
+    const transcript = transcriptResult.response.text();
 
-    // ✔ 3. Olingan matnni foydalanuvchiga yuborish
-    bot.sendMessage(chatId, `🔊 Ovozdan olingan matn:\n${transcript}`);
-    bot.sendChatAction(chatId, "typing");
+    // 4. Olingan matnni yuborish
+    await bot.sendMessage(chatId, `🔊 Ovoz matni:\n${transcript}`);
 
-    // ✔ 4. Matnni Gemini ga yuborish (javob olish)
-    const aiResponse = await model.generateContent(transcript);
-    const reply = aiResponse.response.text();
+    // 5. Matnni Gemini AI ga yuborish
+    const aiResult = await model.generateContent(transcript);
+    const aiReply = aiResult.response.text();
 
-    // ✔ 5. Gemini javobini foydalanuvchiga yuborish
-    bot.sendMessage(chatId, `🤖 AI javobi:\n${reply}`);
+    // 6. Gemini javobi
+    await bot.sendMessage(chatId, `🤖 AI javobi:\n${aiReply}`);
 
   } catch (err) {
     console.error(err);
     bot.sendMessage(chatId, "❌ Ovozli xabarni o‘qishda xatolik!");
   }
 });
-
 
 
 // 📌 Matnli xabarlarni qayta ishlash
