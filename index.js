@@ -67,7 +67,9 @@ bot.on("voice", async (msg) => {
     // 5. Matnni Gemini AI ga yuborish
     const aiResult = await model.generateContent(transcript);
     const aiReply = aiResult.response.text();
-
+    
+    aiReply = aiReply.replace(/[*_~`<>]/g, "");
+    
     // 6. Gemini javobi
     await bot.sendMessage(chatId, `🤖 AI javobi:\n${aiReply}`);
 
