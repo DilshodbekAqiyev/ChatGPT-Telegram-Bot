@@ -42,13 +42,24 @@ async function getRegionsFact() {
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Salom! Men ChatGPT botman va Fazliddin Usmonov tomonidan yaratilganman. Savolingizni yozing 👇"
+    "Salom! Men ChatGPT AI botman. Savolingizni yozing 👇"
   );
 });
 
 // /help komandasi
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
+  const helpText =
+    "🤖 *ChatGPT Telegram Bot yordamchi*\n\n" +
+    "Quyidagilarni qilishingiz mumkin:\n" +
+    "• Savol berish\n" +
+    "• Tarjima\n" +
+    "• Maslahat olish\n" +
+    "• Ovozli habarni matnga aylantirish 🎤\n" +
+    "\nBuyruqlar:\n" +
+    "/start - Botni ishga tushirish\n" +
+    "/help - Yordam";
+
   bot.sendMessage(chatId, helpText, { parse_mode: "Markdown" });
 });
 
@@ -155,7 +166,7 @@ Qoidalar:
     await bot.sendMessage(chatId, `\n🤖 AI javobi:\n${aiReply}`);
   } catch (err) {
     console.error(err);
-    bot.sendMessage(chatId, "❌ Ovozli xabarni o‘qishda xatolik yuz berdi. Iltimos qaytadan urinib ko‘ring!");
+    bot.sendMessage(chatId, "❌ Ovozli xabarni o‘qishda xatolik!");
   }
 });
 
